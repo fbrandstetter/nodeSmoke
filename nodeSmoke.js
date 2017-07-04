@@ -3,7 +3,8 @@ var exec = require('child_process').exec;
 var hosts = [
   '8.8.8.8',
   '8.8.4.4',
-  '4.2.2.1'
+  '4.2.2.1',
+  '2001:4860:4860::8888'
 ];
 
 var options = {
@@ -13,18 +14,31 @@ var options = {
 };
 
 function capturePing(host, callback) {
-  exec("ping -n -c " + options['packets'] + " -i " + options['interval'] + " " + host, function(error, stdout, stderr) {
+  if ( host.split(":").length > 2 ) {
+    var ext = 'ping6';
+  } else {
+    var ext = 'ping';
+  }
+  exec(ext + " -n -c " + options['packets'] + " -i " + options['interval'] + " " + host, function(error, stdout, stderr) {
     var parseData;
-    parseData = stdout.replace('/(?:\r\n|\r|\n)/g', ";");
-    parseLossData = parseData.match('0% packet loss[^;]*').toString();
-    parseLossData = parseLossData.split(",")[0].split("%")[0].trim();
-    parseData = parseData.match('rtt(.*?)[^;]*')[0];
-    parseData = parseData.split("=");
-    parseData = parseData[1].split(",");
-    parseData = parseData[0].trim().split("/").toString();
-    parseData = parseData.split(" ")[0];
-    parseData = parseData.split(",");
-    parseData[4] = parseLossData;
+    try {
+      parseData = stdout.replace('/(?:\r\n|\r|\n)/g', ";");
+      parseLossData = parseData.match('[0-9]% packet loss[^;]*').toString();
+      parseLossData = parseLossData.split(",")[0].split("%")[0].trim();
+      parseData = parseData.match('rtt(.*?)[^;]*')[0];
+      parseData = parseData.split("=");
+      parseData = parseData[1].split(",");
+      parseData = parseData[0].trim().split("/").toString();
+      parseData = parseData.split(" ")[0];
+      parseData = parseData.split(",");
+      parseData[4] = parseLossData;
+    } catch(error) {
+      parseData[0] = 0;
+      parseData[1] = 0;
+      parseData[2] = 0;
+      parseData[3] = 0;
+      parseData[4] = 100;
+    }
     parseData[5] = host;
     callback(parseData);
   });
