@@ -41,7 +41,6 @@ function capturePing(host, callback) {
       parseData[4] = '100';
     }
     parseData[5] = host;
-    console.log(parseData);
     callback(parseData);
   });
 }
