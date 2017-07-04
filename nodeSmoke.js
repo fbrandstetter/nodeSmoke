@@ -33,19 +33,21 @@ function capturePing(host, callback) {
       parseData = parseData.split(",");
       parseData[4] = parseLossData;
     } catch(error) {
-      parseData[0] = 0;
-      parseData[1] = 0;
-      parseData[2] = 0;
-      parseData[3] = 0;
-      parseData[4] = 100;
+      parseData = [];
+      parseData[0] = '0';
+      parseData[1] = '0';
+      parseData[2] = '0';
+      parseData[3] = '0';
+      parseData[4] = '100';
     }
     parseData[5] = host;
+    console.log(parseData);
     callback(parseData);
   });
 }
 
 function writeInflux(host, min, avg, max, jitter, loss) {
-  exec("curl -i -XPOST 'http://localhost:8086/write?db=" + options['influxDB'] + "' --data-binary 'smokeping,host=" + host.replace(":", "_") + " min=" + min + ",avg=" + avg + ",max=" + max + ",jitter=" + jitter + ",loss=" + loss + "'", function(err, stdout, stderr) {
+  exec("curl -i -XPOST 'http://localhost:8086/write?db=" + options['influxDB'] + "' --data-binary 'smokeping,host=" + host + " min=" + min + ",avg=" + avg + ",max=" + max + ",jitter=" + jitter + ",loss=" + loss + "'", function(err, stdout, stderr) {
   });
 }
 
