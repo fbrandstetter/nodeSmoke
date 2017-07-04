@@ -45,7 +45,7 @@ function capturePing(host, callback) {
 }
 
 function writeInflux(host, min, avg, max, jitter, loss) {
-  exec("curl -i -XPOST 'http://localhost:8086/write?db=" + options['influxDB'] + "' --data-binary 'smokeping,host=" + host + " min=" + min + ",avg=" + avg + ",max=" + max + ",jitter=" + jitter + ",loss=" + loss + "'", function(err, stdout, stderr) {
+  exec("curl -i -XPOST 'http://localhost:8086/write?db=" + options['influxDB'] + "' --data-binary 'smokeping,host=" + host.replace(":", "_") + " min=" + min + ",avg=" + avg + ",max=" + max + ",jitter=" + jitter + ",loss=" + loss + "'", function(err, stdout, stderr) {
   });
 }
 
