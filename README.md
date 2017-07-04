@@ -28,3 +28,8 @@ Any configuration is done within the `nodeSmoke.js` file:
       'interval':'0.06',
       'influxDB':'grafana'
     };
+
+## WIP
+
+* IPv6 Support
+* Error-Handling
